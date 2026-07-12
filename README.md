@@ -1,7 +1,23 @@
 # Kids English Word Game
 
-Simple vocabulary quiz game.
+영어 단어를 보고 한국어 뜻을 맞히는 4지선다 퀴즈입니다.
 
-## Deploy
-- Push to GitHub
-- Import into Vercel
+## 주요 기능
+- 한 세트당 랜덤 10문제
+- 100점 만점 점수 표시
+- 연속 정답 표시
+- 정답 시 효과음, 반짝임, 애니메이션
+- 결과 화면에서 틀린 단어 확인
+- 틀린 단어 다시 풀기
+- 오답 단어 브라우저에 자동 저장
+- 모바일 최적화
+- PWA 홈 화면 설치 지원
+
+## Vercel 배포
+1. ZIP 압축을 풉니다.
+2. GitHub 저장소에 모든 파일을 업로드합니다.
+3. Vercel에서 해당 저장소를 Import 합니다.
+4. Framework Preset은 `Other`로 선택하고 배포합니다.
+
+## 단어 수정
+`words.js` 파일의 WORDS 배열을 수정하면 됩니다.

@@ -1,52 +1,87 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Kids English Word Game</title>
-<style>
-body{font-family:Arial,sans-serif;background:#f6f8ff;margin:0}
-.wrap{max-width:700px;margin:40px auto;padding:20px}
-.card{background:#fff;border-radius:16px;padding:24px;box-shadow:0 4px 12px rgba(0,0,0,.1)}
-h1{margin-top:0}
-.word{font-size:42px;font-weight:bold;margin:20px 0;color:#4f46e5}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-button{padding:14px;border:none;border-radius:10px;background:#e5e7eb;font-size:18px;cursor:pointer}
-button:hover{background:#c7d2fe}
-#msg{margin-top:18px;font-weight:bold;font-size:20px}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#6c63ff" />
+  <title>Kids English Word Game</title>
+  <meta name="description" content="영어 단어를 보고 한국어 뜻을 맞히는 어린이용 10문제 단어 퀴즈 게임" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-<div class="wrap">
-<div class="card">
-<h1>Kids English Word Game</h1>
-<div class="word" id="word"></div>
-<div class="grid" id="choices"></div>
-<div id="msg"></div>
-</div>
-</div>
-<script src="words.js"></script>
-<script>
-let current;
-function shuffle(a){return a.sort(()=>Math.random()-0.5)}
-function next(){
- document.getElementById('msg').textContent='';
- current=WORDS[Math.floor(Math.random()*WORDS.length)];
- document.getElementById('word').textContent=current.word;
- const wrong=shuffle(WORDS.filter(x=>x.word!==current.word)).slice(0,3).map(x=>x.meaning);
- const opts=shuffle([...wrong,current.meaning]);
- const c=document.getElementById('choices'); c.innerHTML='';
- opts.forEach(o=>{
-  const b=document.createElement('button');
-  b.textContent=o;
-  b.onclick=()=>{
-   if(o===current.meaning){document.getElementById('msg').textContent='✅ Correct!';setTimeout(next,700);}
-   else document.getElementById('msg').textContent='❌ Try again!';
-  };
-  c.appendChild(b);
- });
-}
-next();
-</script>
+  <main class="app-shell">
+    <section id="startScreen" class="screen active">
+      <div class="hero-card">
+        <div class="mascot" aria-hidden="true">🦊</div>
+        <p class="eyebrow">CHAPTER 3 · FEELINGS & EMOTIONS</p>
+        <h1>English Word Quiz</h1>
+        <p class="intro">영어 단어를 보고 알맞은 한국어 뜻을 골라보세요.</p>
+
+        <div class="mini-stats">
+          <div><strong>26</strong><span>전체 단어</span></div>
+          <div><strong>10</strong><span>한 세트</span></div>
+          <div><strong>100</strong><span>만점</span></div>
+        </div>
+
+        <button id="startBtn" class="primary-btn">게임 시작 🚀</button>
+        <button id="reviewSavedBtn" class="secondary-btn">저장된 오답 복습</button>
+        <p id="savedInfo" class="saved-info"></p>
+      </div>
+    </section>
+
+    <section id="quizScreen" class="screen">
+      <header class="topbar">
+        <button id="quitBtn" class="icon-btn" aria-label="게임 종료">✕</button>
+        <div class="progress-wrap">
+          <div class="progress-label">
+            <span id="progressText">1 / 10</span>
+            <span id="scoreText">0점</span>
+          </div>
+          <div class="progress-track">
+            <div id="progressBar" class="progress-bar"></div>
+          </div>
+        </div>
+        <div id="streakBadge" class="streak-badge">🔥 0</div>
+      </header>
+
+      <section class="quiz-card" id="quizCard">
+        <p class="question-label">이 단어의 뜻은?</p>
+        <h2 id="wordText" class="word-text">anxious</h2>
+        <p id="partText" class="part-text">adjective</p>
+        <div id="choices" class="choices"></div>
+        <div id="feedback" class="feedback" aria-live="polite"></div>
+      </section>
+    </section>
+
+    <section id="resultScreen" class="screen">
+      <div class="result-card">
+        <div id="resultEmoji" class="result-emoji">🏆</div>
+        <p class="eyebrow">QUIZ COMPLETE</p>
+        <h2 id="resultTitle">정말 잘했어요!</h2>
+        <div class="score-circle">
+          <strong id="finalScore">80</strong>
+          <span>점</span>
+        </div>
+        <p id="resultSummary" class="result-summary">10문제 중 8문제를 맞혔어요.</p>
+
+        <div id="wrongSection" class="wrong-section">
+          <h3>틀린 단어</h3>
+          <div id="wrongList" class="wrong-list"></div>
+        </div>
+
+        <div class="result-actions">
+          <button id="retryWrongBtn" class="primary-btn">틀린 단어 다시 풀기</button>
+          <button id="newRoundBtn" class="secondary-btn">새로운 10문제</button>
+          <button id="homeBtn" class="text-btn">처음 화면으로</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="celebration" class="celebration" aria-hidden="true"></div>
+  <script src="words.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
