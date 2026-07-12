@@ -83,7 +83,35 @@ function saveWrongWords(items) {
   const map = new Map(getSavedWrong().map(x => [x.word, x]));
   items.forEach(x => map.set(x.word, x));
   localStorage.setItem("kidsWordWrong", JSON.stringify([...map.values()]));
-  updateSavedInfo();
+  
+function bindPronunciationControls() {
+  const speakButton = $("speakBtn");
+  if (speakButton) {
+    speakButton.addEventListener("click", () => {
+      const q = questions[currentIndex];
+      if (q) speakWord(q.word);
+    });
+  }
+
+  const toggle = $("autoSpeakToggle");
+  if (toggle) {
+    const savedAutoSpeak = localStorage.getItem("kidsWordAutoSpeak");
+    if (savedAutoSpeak !== null) toggle.checked = savedAutoSpeak === "1";
+
+    toggle.addEventListener("change", (event) => {
+      localStorage.setItem("kidsWordAutoSpeak", event.target.checked ? "1" : "0");
+      if (event.target.checked) {
+        const q = questions[currentIndex];
+        if (q) speakWord(q.word);
+      } else {
+        stopSpeaking();
+      }
+    });
+  }
+}
+
+bindPronunciationControls();
+updateSavedInfo();
 }
 
 function updateSavedInfo() {
@@ -136,7 +164,7 @@ function renderQuestion() {
     choices.appendChild(btn);
   });
 
-  if ($("autoSpeakToggle").checked) {
+  if (!$("autoSpeakToggle") || $("autoSpeakToggle").checked) {
     speakWord(q.word, 450);
   }
 }
@@ -275,26 +303,6 @@ function fullConfetti() {
 if ("speechSynthesis" in window) {
   loadEnglishVoice();
   window.speechSynthesis.onvoiceschanged = loadEnglishVoice;
-}
-
-$("speakBtn").addEventListener("click", () => {
-  const q = questions[currentIndex];
-  if (q) speakWord(q.word);
-});
-
-$("autoSpeakToggle").addEventListener("change", (event) => {
-  localStorage.setItem("kidsWordAutoSpeak", event.target.checked ? "1" : "0");
-  if (event.target.checked) {
-    const q = questions[currentIndex];
-    if (q) speakWord(q.word);
-  } else {
-    stopSpeaking();
-  }
-});
-
-const savedAutoSpeak = localStorage.getItem("kidsWordAutoSpeak");
-if (savedAutoSpeak !== null) {
-  $("autoSpeakToggle").checked = savedAutoSpeak === "1";
 }
 
 $("startBtn").addEventListener("click", () => startGame(WORDS));

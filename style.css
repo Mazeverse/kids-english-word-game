@@ -156,3 +156,36 @@ h1{font-size:clamp(36px,8vw,58px);line-height:1;margin:12px 0}
   from{transform:scale(1);box-shadow:0 8px 18px rgba(207,153,28,.22)}
   to{transform:scale(1.12);box-shadow:0 11px 24px rgba(207,153,28,.4)}
 }
+
+
+/* Fixed, highly visible pronunciation button */
+.word-row{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:14px !important;
+  margin-bottom:8px;
+}
+.word-row .word-text{margin:0 !important}
+.speak-btn{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  flex:0 0 58px !important;
+  width:58px !important;
+  height:58px !important;
+  min-width:58px !important;
+  padding:0 !important;
+  border:2px solid #f2bd39 !important;
+  border-radius:999px !important;
+  background:#fff2a8 !important;
+  color:#222 !important;
+  font-size:28px !important;
+  line-height:1 !important;
+  cursor:pointer !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  position:relative !important;
+  z-index:5 !important;
+}
+.speak-btn span{display:block !important}
