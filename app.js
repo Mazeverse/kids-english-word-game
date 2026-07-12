@@ -13,6 +13,49 @@ let streak = 0;
 let wrongAnswers = [];
 let locked = false;
 
+let englishVoice = null;
+let autoSpeakTimer = null;
+
+function loadEnglishVoice() {
+  const voices = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
+  englishVoice =
+    voices.find(v => v.lang === "en-US" && /Google|Samantha|Microsoft|Natural/i.test(v.name)) ||
+    voices.find(v => v.lang === "en-US") ||
+    voices.find(v => /^en(-|_)/i.test(v.lang)) ||
+    null;
+}
+
+function speakWord(word, delay = 0) {
+  if (!("speechSynthesis" in window) || !word) return;
+
+  clearTimeout(autoSpeakTimer);
+  autoSpeakTimer = setTimeout(() => {
+    window.speechSynthesis.cancel();
+
+    const utterance = new SpeechSynthesisUtterance(word);
+    utterance.lang = "en-US";
+    utterance.rate = 0.82;
+    utterance.pitch = 1;
+    utterance.volume = 1;
+    if (englishVoice) utterance.voice = englishVoice;
+
+    const button = $("speakBtn");
+    utterance.onstart = () => button && button.classList.add("speaking");
+    utterance.onend = () => button && button.classList.remove("speaking");
+    utterance.onerror = () => button && button.classList.remove("speaking");
+
+    window.speechSynthesis.speak(utterance);
+  }, delay);
+}
+
+function stopSpeaking() {
+  clearTimeout(autoSpeakTimer);
+  if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+  const button = $("speakBtn");
+  if (button) button.classList.remove("speaking");
+}
+
+
 function shuffle(items) {
   const a = [...items];
   for (let i = a.length - 1; i > 0; i--) {
@@ -75,6 +118,7 @@ function renderQuestion() {
   $("feedback").className = "feedback";
   $("feedback").textContent = "";
   $("quizCard").classList.remove("flash-good");
+  stopSpeaking();
 
   const distractors = shuffle(
     WORDS.filter(x => x.word !== q.word && x.meaning !== q.meaning)
@@ -91,6 +135,10 @@ function renderQuestion() {
     btn.addEventListener("click", () => checkAnswer(btn, text, q));
     choices.appendChild(btn);
   });
+
+  if ($("autoSpeakToggle").checked) {
+    speakWord(q.word, 450);
+  }
 }
 
 function checkAnswer(button, selected, q) {
@@ -112,6 +160,7 @@ function checkAnswer(button, selected, q) {
     $("quizCard").classList.add("flash-good");
     impactBurst(button);
     playTone(true);
+    speakWord(q.word, 330);
   } else {
     streak = 0;
     button.classList.add("wrong");
@@ -223,6 +272,31 @@ function fullConfetti() {
   }
 }
 
+if ("speechSynthesis" in window) {
+  loadEnglishVoice();
+  window.speechSynthesis.onvoiceschanged = loadEnglishVoice;
+}
+
+$("speakBtn").addEventListener("click", () => {
+  const q = questions[currentIndex];
+  if (q) speakWord(q.word);
+});
+
+$("autoSpeakToggle").addEventListener("change", (event) => {
+  localStorage.setItem("kidsWordAutoSpeak", event.target.checked ? "1" : "0");
+  if (event.target.checked) {
+    const q = questions[currentIndex];
+    if (q) speakWord(q.word);
+  } else {
+    stopSpeaking();
+  }
+});
+
+const savedAutoSpeak = localStorage.getItem("kidsWordAutoSpeak");
+if (savedAutoSpeak !== null) {
+  $("autoSpeakToggle").checked = savedAutoSpeak === "1";
+}
+
 $("startBtn").addEventListener("click", () => startGame(WORDS));
 $("newRoundBtn").addEventListener("click", () => startGame(WORDS));
 $("retryWrongBtn").addEventListener("click", () => startGame(wrongAnswers));
@@ -231,11 +305,13 @@ $("reviewSavedBtn").addEventListener("click", () => {
   if (saved.length) startGame(saved);
 });
 $("homeBtn").addEventListener("click", () => {
+  stopSpeaking();
   updateSavedInfo();
   showScreen("start");
 });
 $("quitBtn").addEventListener("click", () => {
   if (confirm("게임을 종료하고 처음 화면으로 돌아갈까요?")) {
+    stopSpeaking();
     updateSavedInfo();
     showScreen("start");
   }

@@ -48,8 +48,15 @@
 
       <section class="quiz-card" id="quizCard">
         <p class="question-label">이 단어의 뜻은?</p>
-        <h2 id="wordText" class="word-text">anxious</h2>
+        <div class="word-row">
+          <h2 id="wordText" class="word-text">anxious</h2>
+          <button id="speakBtn" class="speak-btn" type="button" aria-label="영어 단어 발음 듣기" title="발음 듣기">🔊</button>
+        </div>
         <p id="partText" class="part-text">adjective</p>
+        <label class="auto-speak-control">
+          <input id="autoSpeakToggle" type="checkbox" checked>
+          <span>문제가 나오면 자동으로 발음 듣기</span>
+        </label>
         <div id="choices" class="choices"></div>
         <div id="feedback" class="feedback" aria-live="polite"></div>
       </section>
